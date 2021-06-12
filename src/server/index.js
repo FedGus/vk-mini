@@ -28,6 +28,10 @@ io.on("connection", function (socket) {
     emitVisitors();
   });
 
+  socket.on("join_room", room => {
+    socket.join(room);
+  });
+
   socket.on("disconnect", function () {
     emitVisitors();
     console.log("user disconnected");
