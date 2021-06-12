@@ -6,15 +6,19 @@ import {
   AdaptivityProvider,
   AppRoot
 } from "@vkontakte/vkui";
-import "@vkontakte/vkui/dist/vkui.css";
 
 import Home from "./panels/Home";
 import Persik from "./panels/Persik";
+
+import openSocket from "socket.io-client";
+
+const socket = openSocket("http://localhost:6600");
 
 const App = () => {
   const [activePanel, setActivePanel] = useState("home");
   const [name, setName] = useState("Name");
   const [fetchedUser, setUser] = useState(null);
+  const [fetchedVisitors, setVisitors] = useState(null);
   const [popout, setPopout] = useState(<ScreenSpinner size="large" />);
 
   useEffect(() => {
@@ -29,6 +33,11 @@ const App = () => {
       const user = await bridge.send("VKWebAppGetUserInfo");
       setUser(user);
       setPopout(null);
+      socket.emit("new_visitor", user);
+
+      socket.on("visitors", visitors => {
+        setVisitors(visitors)
+      });
     }
     fetchData();
   }, []);
